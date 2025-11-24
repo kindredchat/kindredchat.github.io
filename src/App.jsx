@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Shield, AlertCircle, ArrowRight, RefreshCw, CheckCircle, XCircle, Info, BookOpen, Star, Zap, Activity, Share2, Globe } from 'lucide-react';
+import { Heart, Shield, AlertCircle, ArrowRight, RefreshCw, CheckCircle, XCircle, Info, BookOpen, Star, Zap, Activity, Share2, Globe, Users } from 'lucide-react';
 import { TRANSLATIONS } from './translations';
 
 // --- COMPONENTS ---
@@ -132,10 +132,15 @@ export default function AttachmentTest() {
   const [showShareToast, setShowShareToast] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [language, setLanguage] = useState('zh-CN');
+  const [assessmentMode, setAssessmentMode] = useState('self'); // 'self' or 'partner'
 
   const t = TRANSLATIONS[language];
 
-  const handleStart = () => {
+  // Use correct question set based on mode
+  const currentQuestions = assessmentMode === 'partner' ? t.questions_partner : t.questions;
+
+  const handleStart = (mode = 'self') => {
+    setAssessmentMode(mode);
     setScreen('quiz');
     setCurrentQIndex(0);
     setAnswers({});
@@ -144,9 +149,9 @@ export default function AttachmentTest() {
 
   const handleAnswer = (value) => {
     setSelectedOption(value);
-    setAnswers(prev => ({ ...prev, [t.questions[currentQIndex].id]: value }));
+    setAnswers(prev => ({ ...prev, [currentQuestions[currentQIndex].id]: value }));
 
-    if (currentQIndex < t.questions.length - 1) {
+    if (currentQIndex < currentQuestions.length - 1) {
       setTimeout(() => {
         setCurrentQIndex(prev => prev + 1);
         setSelectedOption(null);
@@ -161,11 +166,7 @@ export default function AttachmentTest() {
     let anxietyScore = 0;
     let avoidanceScore = 0;
 
-    // Calculation logic remains same, assuming question order is identical across languages
-    // We use index matching to original logic or just use the dimension from current lang
-
-    t.questions.forEach((q, idx) => {
-       // The answers key relies on ID. IDs are consistent across languages (1-12)
+    currentQuestions.forEach(q => {
        const score = answers[q.id] || 4;
        if (q.dimension === 'anxiety') anxietyScore += score;
        if (q.dimension === 'avoidance') avoidanceScore += score;
@@ -265,10 +266,17 @@ export default function AttachmentTest() {
 
             <div className="space-y-3">
               <button
-                onClick={handleStart}
+                onClick={() => handleStart('self')}
                 className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-4 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg shadow-slate-900/20 group"
               >
                 {t.ui.start_btn} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button
+                onClick={() => handleStart('partner')}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 group"
+              >
+                <Users className="w-5 h-5" />
+                {t.ui.start_partner_btn}
               </button>
               <button
                 onClick={() => setScreen('library')}
@@ -358,8 +366,8 @@ export default function AttachmentTest() {
   }
 
   if (screen === 'quiz') {
-    const question = t.questions[currentQIndex];
-    const progress = ((currentQIndex) / t.questions.length) * 100;
+    const question = currentQuestions[currentQIndex];
+    const progress = ((currentQIndex) / currentQuestions.length) * 100;
 
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-800">
@@ -373,7 +381,7 @@ export default function AttachmentTest() {
 
           <div className="p-8 flex-1 flex flex-col">
             <div className="mb-2 text-indigo-600 font-bold text-xs tracking-wider uppercase flex justify-between">
-              <span>{t.ui.question_progress.replace('{current}', currentQIndex + 1).replace('{total}', t.questions.length)}</span>
+              <span>{t.ui.question_progress.replace('{current}', currentQIndex + 1).replace('{total}', currentQuestions.length)}</span>
             </div>
 
             <h2 className="text-xl font-bold text-slate-800 mb-8 leading-relaxed mt-4">
@@ -431,7 +439,9 @@ export default function AttachmentTest() {
       <div className="min-h-screen bg-slate-50 py-8 px-4 font-sans text-slate-800">
         <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className={`p-8 pb-6 ${styles.bgColor} border-b ${styles.borderColor} text-center`}>
-            <p className="text-slate-500 font-medium mb-2 text-xs uppercase tracking-widest">{t.ui.your_type}</p>
+            <p className="text-slate-500 font-medium mb-2 text-xs uppercase tracking-widest">
+                {assessmentMode === 'partner' ? t.ui.partner_type : t.ui.your_type}
+            </p>
             <h1 className={`text-2xl font-bold ${styles.color} mb-4 flex items-center justify-center gap-2`}>
               <styles.icon className="w-6 h-6" />
               {type.shortName || type.name.split(' ')[0]}
@@ -505,7 +515,7 @@ export default function AttachmentTest() {
                 {t.ui.explore_others}
               </button>
               <button
-                onClick={handleStart}
+                onClick={() => handleStart('self')}
                 className="w-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" />
