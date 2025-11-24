@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Shield, AlertCircle, ArrowRight, RefreshCw, CheckCircle, XCircle, Info, BookOpen, Star, Zap, Activity } from 'lucide-react';
+import { Heart, Shield, AlertCircle, ArrowRight, RefreshCw, CheckCircle, XCircle, Info, BookOpen, Star, Zap, Activity, Share2 } from 'lucide-react';
 
 // --- DATA & CONFIGURATION ---
 
@@ -38,11 +38,11 @@ const TYPES = {
     icon: Shield,
     desc: "你在亲密关系中感到舒适和自信。你不担心被抛弃，也乐于依赖他人或被他人依赖。你能够有效地沟通需求，在冲突中保持情绪稳定。",
     detailedInfo: "安全型依恋者通常拥有温暖、充满回应的童年经历。成年后，他们拥有高自尊，也信任他人。他们不玩心理游戏，能够直接表达爱意和需求。他们既享受亲密，也能享受独处。",
-    idealMatch: "安全型依恋者是所有类型的理想伴侣。最完美的匹配是另一个安全型依恋者，这会带来最稳定、最令人满意的关系。你也能很好地包容焦虑型或回避型伴侣，帮助他们走向安全。",
-    badMatch: "虽然你能和任何人相处，但严重未觉察的恐惧-回避型可能会给你带来巨大的情感消耗。",
+    idealMatch: "安全型固然是“百搭”的理想伴侣，能带来稳定关系。但安全型之间也可能因为过于平淡而缺乏激情。关键在于双方是否愿意沟通和共同成长。",
+    badMatch: "虽然你能和任何人相处，但严重未觉察、不愿改变的非安全型伴侣，可能会给你带来巨大的情感消耗，让你怀疑自己。",
     growth: [
-        "继续保持你的开放和诚实。",
-        "成为伴侣的“安全基地”，在他们情绪不稳定时提供支持。",
+        "继续保持你的开放和诚实，但也要保护好自己的能量。",
+        "成为伴侣的“安全基地”，在他们情绪不稳定时提供支持，但不必承担拯救者的角色。",
         "学会设定界限，不要为了包容他人而过度牺牲自己的需求。"
     ]
   },
@@ -55,12 +55,12 @@ const TYPES = {
     icon: AlertCircle,
     desc: "你渴望高度的亲密感，但常担心伴侣不爱你或会离开你。你对他人的情绪变化非常敏感，容易在关系中感到不安和情绪化。",
     detailedInfo: "焦虑型依恋者通常因为照顾者反应不一致而形成。成年后，他们倾向于通过“抗议行为”（如发脾气、冷战）来获取关注。他们的自我价值感往往过度依赖伴侣的认可。",
-    idealMatch: "安全型依恋者是你最好的归宿。他们的稳定性和一致性可以抚平你的焦虑，让你确信自己是被爱的。避免找回避型伴侣，这通常会触发“焦虑-回避陷阱”。",
-    badMatch: "疏离-回避型依恋。你追得越紧，他们跑得越远，这会让你陷入痛苦的循环。",
+    idealMatch: "安全型依恋者能给你最好的安抚。但其实，如果对方是愿意沟通、能够理解你不安的“自我觉察型”焦虑者，你们也能因为深刻的共情而建立紧密的联结。关键是避免“追逃模式”。",
+    badMatch: "完全回避沟通、冷暴力的伴侣（通常是未觉察的回避型）。你追得越紧，他们跑得越远，这会让你陷入痛苦的循环。",
     growth: [
         "建立自我价值感：列出你的优点，不依赖外界确认。",
         "学会“暂停”：在感到焦虑想发信息轰炸时，放下手机 30 分钟。",
-        "直接沟通需求，而不是通过情绪化的行为让对方猜。",
+        "直接沟通需求（“我需要一个拥抱”），而不是通过情绪化的行为（发脾气）让对方猜。",
         "练习独处，发现一个人时的快乐。"
     ]
   },
@@ -73,11 +73,11 @@ const TYPES = {
     icon: XCircle,
     desc: "你强调独立和自给自足，往往将亲密关系视为对自由的威胁。你会压抑自己的情感需求，在伴侣试图靠近时会下意识地后退。",
     detailedInfo: "疏离-回避型依恋者可能因为童年时期情感需求被忽视，学会了“靠自己”。他们通常压抑情绪，显得冷漠或理性。他们实际上也有亲密需求，但防御机制让他们否认这一点。",
-    idealMatch: "安全型依恋者。他们尊重你的空间需求，同时不会像焦虑型那样给你施加压力，能让你慢慢卸下防备。两个回避型在一起可能相安无事，但会缺乏深层的情感连接。",
-    badMatch: "焦虑型依恋。他们的粘人和情感需求会让你感到窒息，触发你的逃跑本能。",
+    idealMatch: "安全型依恋者能尊重你的空间，让你慢慢卸下防备。此外，另一个独立的疏离型伴侣，只要双方达成共识，也能建立一种“相敬如宾”的稳定关系，虽然可能情感浓度不高，但彼此都感到自在。",
+    badMatch: "过度依赖、情绪化严重且不愿独立的伴侣（通常是严重的焦虑型）。他们的粘人会让你感到窒息，触发你的逃跑本能。",
     growth: [
-        "重新定义独立：真正的强大是能够展示脆弱。",
-        "练习表达感受：从简单的“我今天有点累”开始分享。",
+        "重新定义独立：真正的强大是能够展示脆弱，而不仅仅是推开他人。",
+        "练习表达感受：从简单的“我今天有点累”开始分享，而不是直接沉默。",
         "当想逃离时，试着留下来，告诉伴侣“我需要一点空间”，而不是直接消失。",
         "尝试依靠他人完成一些小事。"
     ]
@@ -91,11 +91,11 @@ const TYPES = {
     icon: Info,
     desc: "你处于矛盾之中：既渴望亲密，又极度恐惧受伤。你可能表现出“忽冷忽热”的特质，想靠近却又在靠近时感到恐慌。",
     detailedInfo: "恐惧型依恋者（也称混乱型）通常经历过创伤或极不稳定的照顾。他们想爱却不敢爱。在关系中，他们可能在极其粘人和极其冷漠之间摇摆。",
-    idealMatch: "安全型依恋者。你需要极大的耐心、稳定和安全感来疗愈过去的创伤。安全型伴侣能提供这种环境。专业的心理咨询也是非常重要的辅助。",
-    badMatch: "恐惧型或焦虑型。不稳定的情绪碰撞会让关系充满戏剧性和痛苦。",
+    idealMatch: "安全型依恋者是疗愈的最佳助攻，因为他们极其稳定。但如果有伴侣（无论何种类型）愿意展现极大的耐心，并接受心理咨询的辅助，关系依然可以很美好。这并非绝路，而是成长的起点。",
+    badMatch: "情绪极不稳定、忽冷忽热的伴侣。这种不确定性会加剧你的内在混乱，让关系充满戏剧性和痛苦。",
     growth: [
-        "寻求专业帮助：疗愈过去的创伤是关键。",
-        "识别触发点：记录下让你感到恐慌的时刻。",
+        "寻求专业帮助：疗愈过去的创伤是关键，不要独自承担所有。",
+        "识别触发点：记录下让你感到恐慌的时刻，区分“过去的创伤”和“现在的现实”。",
         "练习“自我安抚”：当恐惧袭来，告诉自己“我现在是安全的”。",
         "建立清晰的界限，这会让你感到更有掌控感。"
     ]
@@ -170,18 +170,25 @@ export default function AttachmentTest() {
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [result, setResult] = useState(null);
   const [selectedLibraryType, setSelectedLibraryType] = useState('SECURE');
+  const [showShareToast, setShowShareToast] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const handleStart = () => {
     setScreen('quiz');
     setCurrentQIndex(0);
     setAnswers({});
+    setSelectedOption(null);
   };
 
   const handleAnswer = (value) => {
+    setSelectedOption(value);
     setAnswers(prev => ({ ...prev, [QUESTIONS[currentQIndex].id]: value }));
 
     if (currentQIndex < QUESTIONS.length - 1) {
-      setTimeout(() => setCurrentQIndex(prev => prev + 1), 250);
+      setTimeout(() => {
+        setCurrentQIndex(prev => prev + 1);
+        setSelectedOption(null);
+      }, 250);
     } else {
       setScreen('calculating');
       setTimeout(calculateAndShowResult, 1500);
@@ -206,6 +213,33 @@ export default function AttachmentTest() {
 
     setResult({ typeKey, anxietyScore, avoidanceScore });
     setScreen('result');
+  };
+
+  const handleShare = async () => {
+    const type = TYPES[result.typeKey];
+    const anxietyPct = Math.round((result.anxietyScore / 42) * 100);
+    const avoidancePct = Math.round((result.avoidanceScore / 42) * 100);
+    const text = `我在依恋类型测试中测出是【${type.name.split(' ')[0]}】(焦虑: ${anxietyPct}%, 回避: ${avoidancePct}%)\n快来看看你的依恋类型是什么吧！\n${window.location.href}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: '依恋类型测试',
+          text: text,
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.log('Share failed', err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(text);
+        setShowShareToast(true);
+        setTimeout(() => setShowShareToast(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    }
   };
 
   if (screen === 'intro') {
@@ -358,12 +392,22 @@ export default function AttachmentTest() {
             <div className="space-y-3 mt-auto">
               {OPTIONS.map((opt) => (
                 <button
-                  key={opt.value}
+                  key={`${currentQIndex}-${opt.value}`}
                   onClick={() => handleAnswer(opt.value)}
-                  className="w-full text-left p-4 rounded-xl border border-slate-200 hover:border-indigo-600 hover:bg-indigo-50 transition-all duration-200 flex items-center justify-between group active:scale-[0.99]"
+                  className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group active:scale-[0.99] ${
+                    selectedOption === opt.value
+                      ? 'border-indigo-600 bg-indigo-50 ring-1 ring-indigo-600'
+                      : 'border-slate-200 hover:border-indigo-600 hover:bg-indigo-50'
+                  }`}
                 >
-                  <span className="text-slate-600 group-hover:text-indigo-900 font-medium text-sm">{opt.label}</span>
-                  <div className="w-4 h-4 rounded-full border-2 border-slate-300 group-hover:border-indigo-600 group-hover:bg-indigo-600 transition-colors"></div>
+                  <span className={`font-medium text-sm ${selectedOption === opt.value ? 'text-indigo-900' : 'text-slate-600 group-hover:text-indigo-900'}`}>
+                    {opt.label}
+                  </span>
+                  <div className={`w-4 h-4 rounded-full border-2 transition-colors ${
+                    selectedOption === opt.value
+                      ? 'border-indigo-600 bg-indigo-600'
+                      : 'border-slate-300 group-hover:border-indigo-600 group-hover:bg-indigo-600'
+                  }`}></div>
                 </button>
               ))}
             </div>
@@ -452,6 +496,13 @@ export default function AttachmentTest() {
 
             <div className="flex flex-col gap-3">
               <button
+                onClick={handleShare}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md shadow-indigo-200"
+              >
+                <Share2 className="w-4 h-4" />
+                分享我的结果
+              </button>
+              <button
                 onClick={() => {
                    setSelectedLibraryType(result.typeKey);
                    setScreen('library');
@@ -463,7 +514,7 @@ export default function AttachmentTest() {
               </button>
               <button
                 onClick={handleStart}
-                className="w-full bg-slate-900 text-white hover:bg-slate-800 font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10"
+                className="w-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" />
                 重新测试
@@ -475,6 +526,13 @@ export default function AttachmentTest() {
         <p className="text-center text-slate-400 text-[10px] mt-8 pb-4 max-w-xs mx-auto">
           注：本测试基于ECR量表简化版，结果仅供自我探索参考，不能替代专业心理咨询诊断。
         </p>
+
+        {/* Toast for copy feedback */}
+        {showShareToast && (
+          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs py-2 px-4 rounded-full shadow-lg transition-opacity animate-fade-in-up">
+            已复制结果到剪贴板！
+          </div>
+        )}
       </div>
     );
   }
