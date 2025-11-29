@@ -5,57 +5,19 @@ import {
   Sparkles, Lock, ArrowUpRight, Home, MessageSquare, Bot, User, Compass,
   ChevronRight, Send
 } from 'lucide-react';
+import { CreateMLCEngine } from "@mlc-ai/web-llm";
 import { TRANSLATIONS } from './translations';
 
 // --- CONSTANTS & LOGIC ---
 
-const PARADOX_CONTENT = {
-  'zh-CN': {
-    title: "特别洞察：欲望对象与治愈对象",
-    subtitle: "为何你总是爱上让你痛苦的人？",
-    content: [
-      {
-        title: "1. 错误的“理想”：回避型陷阱",
-        text: "焦虑型/狂热型人格本能地被疏离、不可预测的人（回避型/游戏型）吸引。对方的若即若离制造了间歇性强化，让你将焦虑误认为是激情的深度。这种伴侣往往是助燃剂，使关系陷入自我毁灭的循环。"
-      },
-      {
-        title: "2. 真正的理想：安全型容器",
-        text: "你唯一的功能性理想伴侣是安全型依恋者（且带有奉献型特质）。他们情绪一致、边界清晰、高度透明。只有这种平稳的反馈机制才能强制打破你的“猜疑-焦虑”循环。"
-      },
-      {
-        title: "3. 必须克服的障碍：“无聊”感",
-        text: "当你遇到真正对的人（安全型）时，第一反应可能是排斥，觉得“无聊”或“没感觉”。这是戒断反应。必须强行认知到：这种“无聊”就是安全感。只有耐受住初期的平淡，病理机制才能消退。"
-      }
-    ]
-  },
-  'en': {
-    title: "Special Insight: The Paradox of Desire",
-    subtitle: "Why do you fall for those who hurt you?",
-    content: [
-      {
-        title: "1. The Avoidant Trap",
-        text: "Anxious/Mania types are often attracted to distant, unpredictable partners (Avoidant/Ludus). Their inconsistency creates intermittent reinforcement, making you mistake anxiety for passion. This dynamic fuels a self-destructive cycle."
-      },
-      {
-        title: "2. The Secure Container",
-        text: "Your true functional match is a Secure partner (ideally with Agape traits). They provide consistency, boundaries, and transparency. Only this stable feedback loop can break your 'suspicion-anxiety' cycle."
-      },
-      {
-        title: "3. The Barrier: 'Boredom'",
-        text: "When you meet a Secure partner, you might feel bored or think there's 'no spark'. This is a withdrawal symptom from the emotional rollercoaster. You must realize: this 'boredom' is actually safety."
-      }
-    ]
-  }
-};
-
 // --- COMPONENTS ---
 
-const BottomNav = ({ activeTab, setActiveTab }) => {
+const BottomNav = ({ activeTab, setActiveTab, t }) => {
   const tabs = [
-    { id: 'home', icon: Home, label: 'Explore' },
-    { id: 'community', icon: Compass, label: 'Community' },
-    { id: 'ai', icon: Bot, label: 'AI Chat' },
-    { id: 'mine', icon: User, label: 'Me' },
+    { id: 'home', icon: Home, label: t.ui.explore_tab || '探索' },
+    { id: 'community', icon: Compass, label: t.ui.community_tab || '社区' },
+    { id: 'ai', icon: Bot, label: t.ui.ai_tab || 'AI 聊愈' },
+    { id: 'mine', icon: User, label: t.ui.mine_tab || '我的' },
   ];
 
   return (
@@ -125,12 +87,12 @@ const HomeTab = ({ t, handleStart, results, setScreen, setLibraryTab, setSelecte
       <div className="relative mt-4 mb-8">
         <div className="flex justify-between items-start">
           <div>
-             <h1 className="text-3xl font-bold text-white mb-1 tracking-tight">Cosmic Psyche</h1>
-             <p className="text-slate-400 text-sm">Explore your inner universe</p>
+             <h1 className="text-3xl font-bold text-white mb-1 tracking-tight">{t.ui.home_title || '知几 Kindred'}</h1>
+             <p className="text-slate-400 text-sm">{t.ui.home_subtitle || '探索你的内心宇宙'}</p>
           </div>
-          <button onClick={() => setScreen('language_select')} className="p-2 glass-btn rounded-full text-slate-300">
+          {/* <button onClick={() => setScreen('language_select')} className="p-2 glass-btn rounded-full text-slate-300">
              <Globe className="w-5 h-5" />
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -146,7 +108,7 @@ const HomeTab = ({ t, handleStart, results, setScreen, setLibraryTab, setSelecte
           <h2 className="text-xl font-bold text-white mb-2">{t.ui.title}</h2>
           <p className="text-slate-300 text-sm mb-4 line-clamp-2">{t.ui.subtitle}</p>
           <div className="flex items-center gap-2 text-gold-400 text-sm font-medium group-hover:gap-3 transition-all">
-            <span>{results.self.attachment ? 'Retake Test' : t.ui.start_btn}</span>
+            <span>{results.self.attachment ? (t.ui.retake_test || '重新测试') : (t.ui.start_test || '开始测试')}</span>
             <ArrowRight className="w-4 h-4" />
           </div>
         </div>
@@ -160,7 +122,7 @@ const HomeTab = ({ t, handleStart, results, setScreen, setLibraryTab, setSelecte
               <Palette className="w-5 h-5 text-white" />
            </div>
            <h3 className="text-white font-bold mb-1">{t.ui.title_love_style}</h3>
-           <p className="text-xs text-slate-400 mb-2">Color Wheel Theory</p>
+           <p className="text-xs text-slate-400 mb-2">{t.ui.subtitle_love_style_short || '颜色理论'}</p>
            {results.self.loveStyle && <CheckCircle className="w-4 h-4 text-green-400 absolute top-4 right-4" />}
         </div>
 
@@ -169,8 +131,8 @@ const HomeTab = ({ t, handleStart, results, setScreen, setLibraryTab, setSelecte
            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mb-3 shadow-lg shadow-cyan-500/30">
               <Users className="w-5 h-5 text-white" />
            </div>
-           <h3 className="text-white font-bold mb-1">Partner Test</h3>
-           <p className="text-xs text-slate-400 mb-2">Decode relationship</p>
+           <h3 className="text-white font-bold mb-1">{t.ui.start_partner_btn}</h3>
+           <p className="text-xs text-slate-400 mb-2">{t.ui.subtitle_partner_short || '解码关系'}</p>
            {results.partner.attachment && <CheckCircle className="w-4 h-4 text-green-400 absolute top-4 right-4" />}
         </div>
       </div>
@@ -178,7 +140,7 @@ const HomeTab = ({ t, handleStart, results, setScreen, setLibraryTab, setSelecte
       {/* Library/Discovery Section */}
       <div>
         <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-gold-400" /> Library
+          <BookOpen className="w-5 h-5 text-gold-400" /> {t.ui.library_title}
         </h3>
         <div className="glass-card rounded-xl p-0 overflow-hidden">
           <div
@@ -187,7 +149,7 @@ const HomeTab = ({ t, handleStart, results, setScreen, setLibraryTab, setSelecte
           >
             <div className="flex items-center gap-3">
                <div className="bg-green-500/20 p-2 rounded-lg"><Shield className="w-4 h-4 text-green-400"/></div>
-               <span className="text-slate-200 text-sm">Attachment Styles Encyclopedia</span>
+               <span className="text-slate-200 text-sm">{t.ui.library_description_attachment || '依恋类型百科'}</span>
             </div>
             <ChevronRight className="w-4 h-4 text-slate-500" />
           </div>
@@ -197,7 +159,7 @@ const HomeTab = ({ t, handleStart, results, setScreen, setLibraryTab, setSelecte
           >
              <div className="flex items-center gap-3">
                <div className="bg-red-500/20 p-2 rounded-lg"><AlertCircle className="w-4 h-4 text-red-400"/></div>
-               <span className="text-slate-200 text-sm">Understanding Anxiety</span>
+               <span className="text-slate-200 text-sm">{t.ui.library_description_anxiety || '深入理解焦虑型'}</span>
             </div>
              <ChevronRight className="w-4 h-4 text-slate-500" />
           </div>
@@ -210,17 +172,17 @@ const HomeTab = ({ t, handleStart, results, setScreen, setLibraryTab, setSelecte
           onClick={() => setScreen('comprehensive_report')}
           className="w-full bg-gradient-to-r from-gold-500 to-amber-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:scale-[1.02] transition-transform"
         >
-          <Sparkles className="w-5 h-5 text-white" /> View Your Cosmic Profile
+          <Sparkles className="w-5 h-5 text-white" /> {t.ui.view_cosmic_profile || '查看你的宇宙档案'}
         </button>
       )}
     </div>
   );
 };
 
-const CommunityTab = () => {
+const CommunityTab = ({ t }) => {
   return (
     <div className="p-6 pb-24 h-screen overflow-y-auto">
-      <h1 className="text-2xl font-bold text-white mb-6 sticky top-0 bg-slate-900/80 backdrop-blur-md py-4 z-10">Starry Plaza</h1>
+      <h1 className="text-2xl font-bold text-white mb-6 sticky top-0 bg-slate-900/80 backdrop-blur-md py-4 z-10">{t.ui.community_title || '星际广场'}</h1>
 
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
@@ -228,12 +190,12 @@ const CommunityTab = () => {
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-xs font-bold text-indigo-300">U{i}</div>
               <div>
-                <p className="text-sm font-bold text-slate-200">Cosmic Traveler #{2300 + i}</p>
-                <p className="text-[10px] text-slate-500">2 hours ago</p>
+                <p className="text-sm font-bold text-slate-200">{t.ui.cosmic_traveler || '宇宙旅人'} #{2300 + i}</p>
+                <p className="text-[10px] text-slate-500">{t.ui.ago_2_hours || '2小时前'}</p>
               </div>
             </div>
             <p className="text-sm text-slate-300 mb-3 leading-relaxed">
-              Just did the test and realized I'm a Fearful Avoidant. The description of "craving intimacy but fearing it" hit so hard. 🌌 Anyone else feel this paradox?
+              {t.ui.just_did_test || '刚做完测试...'}
             </p>
             <div className="flex items-center gap-4 text-slate-500 text-xs">
               <button className="flex items-center gap-1 hover:text-pink-400 transition-colors"><Heart className="w-3 h-3" /> 24</button>
@@ -250,27 +212,68 @@ const CommunityTab = () => {
   );
 };
 
-const AiChatTab = () => {
+const AiChatTab = ({ t }) => {
   const [messages, setMessages] = useState([
-    { id: 1, sender: 'bot', text: "Hello, traveler. I am Dharma, your AI guide to the inner universe. How are you feeling today?" }
+    { id: 1, sender: 'bot', text: t.ui.ai_intro || "你好，旅人。我是达摩，你的内心宇宙向导。今天感觉如何？" }
   ]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [engine, setEngine] = useState(null);
+  const [initProgress, setInitProgress] = useState("");
   const messagesEndRef = useRef(null);
 
-  const handleSend = () => {
-    if(!input.trim()) return;
-    const newMsg = { id: Date.now(), sender: 'user', text: input };
-    setMessages(prev => [...prev, newMsg]);
-    setInput("");
+  const selectedModel = "Qwen2-0.5B-Instruct-q4f16_1-MLC";
 
-    setTimeout(() => {
-       setMessages(prev => [...prev, { id: Date.now()+1, sender: 'bot', text: "I hear you. Emotions are like tides in the cosmic ocean. Tell me more about what's on your mind." }]);
-    }, 1000);
+  useEffect(() => {
+    const initEngine = async () => {
+        try {
+            const eng = await CreateMLCEngine(
+                selectedModel,
+                {
+                    initProgressCallback: (progress) => {
+                        setInitProgress(progress.text);
+                    },
+                }
+            );
+            setEngine(eng);
+            setInitProgress("");
+        } catch (error) {
+            console.error("Failed to load engine", error);
+            setInitProgress("Failed to load AI model.");
+        }
+    };
+    initEngine();
+  }, []);
+
+  const handleSend = async () => {
+    if(!input.trim()) return;
+    if (!engine) return;
+
+    const userMsg = { id: Date.now(), sender: 'user', text: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setIsLoading(true);
+
+    try {
+        const reply = await engine.chat.completions.create({
+            messages: [
+                ...messages.filter(m => m.id !== 1).map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text })),
+                { role: "user", content: input }
+            ],
+        });
+        const botText = reply.choices[0].message.content;
+        setMessages(prev => [...prev, { id: Date.now()+1, sender: 'bot', text: botText }]);
+    } catch (error) {
+        console.error("Chat error", error);
+        setMessages(prev => [...prev, { id: Date.now()+1, sender: 'bot', text: t.ui.ai_error || "抱歉，我现在无法连接到星辰（模型加载失败）。" }]);
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, initProgress]);
 
   return (
     <div className="flex flex-col h-screen pb-20 bg-slate-900">
@@ -282,15 +285,20 @@ const AiChatTab = () => {
            </div>
         </div>
         <div>
-           <h2 className="font-bold text-white">Dharma AI</h2>
+           <h2 className="font-bold text-white">{t.ui.ai_title || "AI 达摩"}</h2>
            <div className="flex items-center gap-1 text-[10px] text-green-400">
-             <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span> Online
+             <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span> {t.ui.online || "在线"}
            </div>
         </div>
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {initProgress && (
+            <div className="text-center text-xs text-slate-500 p-4 bg-white/5 rounded-xl">
+                {initProgress}
+            </div>
+        )}
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed ${
@@ -302,6 +310,13 @@ const AiChatTab = () => {
             </div>
           </div>
         ))}
+        {isLoading && (
+             <div className="flex justify-start">
+                 <div className="glass-card text-slate-200 p-3 rounded-2xl rounded-tl-none bg-white/10">
+                    <span className="animate-pulse">...</span>
+                 </div>
+             </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -313,10 +328,11 @@ const AiChatTab = () => {
              value={input}
              onChange={e => setInput(e.target.value)}
              onKeyDown={e => e.key === 'Enter' && handleSend()}
-             placeholder="Type a message..."
-             className="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-4 pr-12 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-600"
+             placeholder={t.ui.ai_placeholder || "输入消息..."}
+             disabled={!engine || isLoading}
+             className="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-4 pr-12 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-600 disabled:opacity-50"
            />
-           <button onClick={handleSend} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white hover:bg-indigo-500 transition-colors">
+           <button onClick={handleSend} disabled={!engine || isLoading} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white hover:bg-indigo-500 transition-colors disabled:opacity-50">
               <Send className="w-4 h-4" />
            </button>
          </div>
@@ -325,7 +341,7 @@ const AiChatTab = () => {
   );
 };
 
-const MineTab = ({ results }) => {
+const MineTab = ({ results, t }) => {
   return (
     <div className="p-6 pb-24">
        <div className="flex items-center gap-4 mb-8">
@@ -335,31 +351,31 @@ const MineTab = ({ results }) => {
              </div>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">Stardust User</h1>
+            <h1 className="text-xl font-bold text-white">{t.ui.user_name || "星尘用户"}</h1>
             <p className="text-sm text-slate-400">ID: 882910</p>
-            <span className="inline-block mt-2 text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30">Premium Member</span>
+            <span className="inline-block mt-2 text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30">{t.ui.premium || "高级会员"}</span>
           </div>
        </div>
 
        <div className="space-y-4">
          <div className="glass-card p-4 rounded-xl flex items-center justify-between">
-            <span className="text-slate-300">My Reports</span>
+            <span className="text-slate-300">{t.ui.my_reports || "我的报告"}</span>
             <span className="text-white font-bold">{Object.values(results.self).filter(Boolean).length}</span>
          </div>
          <div className="glass-card p-4 rounded-xl flex items-center justify-between">
-            <span className="text-slate-300">Saved Tests</span>
+            <span className="text-slate-300">{t.ui.saved_tests || "收藏的测试"}</span>
             <span className="text-white font-bold">2</span>
          </div>
          <div className="glass-card p-4 rounded-xl flex items-center justify-between">
-            <span className="text-slate-300">Coins</span>
+            <span className="text-slate-300">{t.ui.coins || "星币"}</span>
             <span className="text-gold-400 font-bold">120</span>
          </div>
        </div>
 
        <div className="mt-8 space-y-2">
-         <button className="w-full text-left p-4 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">Settings</button>
-         <button className="w-full text-left p-4 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">Help & Support</button>
-         <button className="w-full text-left p-4 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">About</button>
+         <button className="w-full text-left p-4 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">{t.ui.settings || "设置"}</button>
+         <button className="w-full text-left p-4 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">{t.ui.help || "帮助与支持"}</button>
+         <button className="w-full text-left p-4 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">{t.ui.about || "关于"}</button>
        </div>
     </div>
   )
@@ -369,9 +385,9 @@ const MineTab = ({ results }) => {
 
 export default function AttachmentTest() {
   // State
-  const [hasSelectedLanguage, setHasSelectedLanguage] = useState(false);
-  const [language, setLanguage] = useState('zh-CN');
-  const [screen, setScreen] = useState('language_select'); // 'language_select', 'intro' (Main Layout), 'quiz', 'result', etc.
+  const [hasSelectedLanguage, setHasSelectedLanguage] = useState(true); // Default to selected
+  const [language, setLanguage] = useState('zh-CN'); // Default to Chinese
+  const [screen, setScreen] = useState('intro'); // Start at intro directly
   const [activeTab, setActiveTab] = useState('home');
 
   const [answers, setAnswers] = useState({});
@@ -392,19 +408,15 @@ export default function AttachmentTest() {
   const [libraryTab, setLibraryTab] = useState('attachment');
   const [selectedLibraryType, setSelectedLibraryType] = useState('SECURE');
 
-  const t = TRANSLATIONS[language] || TRANSLATIONS['en'];
+  const t = TRANSLATIONS[language] || TRANSLATIONS['zh-CN']; // Fallback to zh-CN
 
   useEffect(() => {
-      if (!hasSelectedLanguage) {
-          setScreen('language_select');
-      }
-  }, [hasSelectedLanguage]);
+      // Force language to zh-CN if needed, but state init handles it.
+      // Skipping language selection screen as per "All interfaces Chinese"
+  }, []);
 
   // Helpers
   const getTypeStyles = (key) => {
-       // Keeping existing logic but returning simpler color keys or updated colors if needed.
-       // For now, mapping old logic to new UI can be done in the render phase or here.
-       // Let's stick to the structure but use the returned values for logic, styling handled in JSX mostly.
       if (['EROS', 'LUDUS', 'STORGE', 'MANIA', 'PRAGMA', 'AGAPE'].includes(key)) {
           switch(key) {
               case 'EROS': return { color: "text-red-400", bgColor: "bg-red-500/10", borderColor: "border-red-500/20", icon: Heart };
@@ -508,6 +520,7 @@ export default function AttachmentTest() {
   // --- VIEWS ---
 
   if (screen === 'language_select') {
+      // Keeping this just in case, but usually skipped
       const langs = [
         { code: 'zh-CN', label: '简体中文' },
         { code: 'zh-TW', label: '繁體中文' },
@@ -554,7 +567,7 @@ export default function AttachmentTest() {
           </div>
           <div className="p-8 flex-1 flex flex-col">
             <div className="mb-6 flex justify-between text-indigo-300 text-xs font-bold tracking-widest uppercase">
-              <span>QUESTION {currentQIndex + 1}/{questions.length}</span>
+              <span>{t.ui.question_progress.replace('{current}', currentQIndex + 1).replace('{total}', questions.length)}</span>
             </div>
             <h2 className="text-xl font-bold text-white mb-8 leading-relaxed">{question.text}</h2>
             <div className="space-y-3 mt-auto">
@@ -588,8 +601,8 @@ export default function AttachmentTest() {
                <div className="absolute inset-0 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                <Sparkles className="absolute inset-0 m-auto text-indigo-400 w-8 h-8 animate-pulse" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Analyzing Stars...</h2>
-            <p className="text-slate-400">Connecting your soul pattern</p>
+            <h2 className="text-2xl font-bold text-white mb-2">{t.ui.analyzing || "正在分析星象..."}</h2>
+            <p className="text-slate-400">{t.ui.connecting || "连接你的灵魂图谱"}</p>
          </div>
       </div>
     );
@@ -653,7 +666,7 @@ export default function AttachmentTest() {
             {/* Actions */}
             <div className="space-y-3">
                <button onClick={() => setScreen('intro')} className="w-full glass-btn py-3 rounded-xl text-white font-semibold">
-                  Return to Home
+                  {t.ui.back || "返回"}
                </button>
             </div>
           </div>
@@ -669,12 +682,10 @@ export default function AttachmentTest() {
          <div className="min-h-screen bg-slate-900 p-4 pb-20 overflow-y-auto">
             <div className="max-w-md mx-auto glass-card rounded-2xl p-6 min-h-[50vh] text-slate-300">
                <button onClick={() => setScreen('intro')} className="mb-4 text-sm text-indigo-400 flex items-center gap-1">
-                 &larr; Back
+                 &larr; {t.ui.back || "返回"}
                </button>
-               <h1 className="text-2xl font-bold text-white mb-4">Detailed Report</h1>
-               <p className="mb-4">
-                 {screen === 'library' ? "Library content..." : "Report content..."}
-               </p>
+               <h1 className="text-2xl font-bold text-white mb-4">{t.ui.report_title || "详细报告"}</h1>
+
                {screen === 'library' && (
                   <div className="space-y-4">
                     <h2 className="text-lg font-bold text-white">{selectedLibraryType}</h2>
@@ -683,18 +694,33 @@ export default function AttachmentTest() {
                )}
                {screen === 'comprehensive_report' && (
                   <div>
-                    <p className="mb-4">Your combined profile analysis.</p>
-                     {/* Re-implement logic if needed, or keep simple for UI demo */}
-                     <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                    <p className="mb-4">{t.ui.report_intro || "您的综合档案分析。"}</p>
+
+                     <div className="bg-white/5 p-4 rounded-xl border border-white/10 mb-6">
                         <div className="flex justify-between mb-2">
                            <span>Attachment</span>
-                           <span className="text-indigo-400">{t.types[results.self.attachment.typeKey].name}</span>
+                           <span className="text-indigo-400">{results.self.attachment ? t.types[results.self.attachment.typeKey].name : '-'}</span>
                         </div>
                         <div className="flex justify-between">
                            <span>Love Style</span>
-                           <span className="text-pink-400">{t.types_love_style[results.self.loveStyle.typeKey].name}</span>
+                           <span className="text-pink-400">{results.self.loveStyle ? t.types_love_style[results.self.loveStyle.typeKey].name : '-'}</span>
                         </div>
                      </div>
+
+                     {t.ui.paradox && (
+                       <div className="space-y-4">
+                         <h2 className="text-xl font-bold text-gold-400">{t.ui.paradox.title}</h2>
+                         <p className="text-slate-400 text-sm italic mb-4">{t.ui.paradox.subtitle}</p>
+                         <div className="space-y-4">
+                           {t.ui.paradox.points.map((point, index) => (
+                             <div key={index} className="bg-white/5 p-4 rounded-xl">
+                               <h3 className="font-bold text-white mb-2">{point.title}</h3>
+                               <p className="text-slate-300 text-sm">{point.text}</p>
+                             </div>
+                           ))}
+                         </div>
+                       </div>
+                     )}
                   </div>
                )}
             </div>
@@ -717,11 +743,11 @@ export default function AttachmentTest() {
                setSelectedLibraryType={setSelectedLibraryType}
              />
           )}
-          {activeTab === 'community' && <CommunityTab />}
-          {activeTab === 'ai' && <AiChatTab />}
-          {activeTab === 'mine' && <MineTab results={results} />}
+          {activeTab === 'community' && <CommunityTab t={t} />}
+          {activeTab === 'ai' && <AiChatTab t={t} />}
+          {activeTab === 'mine' && <MineTab results={results} t={t} />}
 
-          <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+          <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} t={t} />
       </div>
   );
 }

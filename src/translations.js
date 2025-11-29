@@ -50,7 +50,61 @@ export const TRANSLATIONS = {
       "tab_attachment": "依恋理论",
       "tab_love_style": "爱情色轮",
       "tab_reconciliation": "复合分析",
-      "select_language": "选择语言 / Select Language"
+      "select_language": "选择语言 / Select Language",
+      "home_title": "知几 Kindred",
+      "home_subtitle": "探索你的内心宇宙",
+      "community_title": "星际广场",
+      "ai_title": "AI 达摩",
+      "mine_title": "我的",
+      "explore_tab": "探索",
+      "community_tab": "社区",
+      "ai_tab": "AI 聊愈",
+      "mine_tab": "我的",
+      "online": "在线",
+      "ai_intro": "你好，旅人。我是达摩，你的内心宇宙向导。今天感觉如何？",
+      "ai_placeholder": "输入消息...",
+      "user_name": "星尘用户",
+      "premium": "高级会员",
+      "my_reports": "我的报告",
+      "saved_tests": "收藏的测试",
+      "coins": "星币",
+      "settings": "设置",
+      "help": "帮助与支持",
+      "about": "关于",
+      "analyzing": "正在分析星象...",
+      "connecting": "连接你的灵魂图谱",
+      "library_description_attachment": "了解依恋理论，发现关系中的安全感",
+      "library_description_anxiety": "深入理解焦虑型依恋与情绪调节",
+      "view_cosmic_profile": "查看你的宇宙档案",
+      "just_did_test": "刚做完测试，发现我是恐惧回避型。“既渴望亲密又害怕亲密”的描述太扎心了。🌌 有人也有这种矛盾的感觉吗？",
+      "ago_2_hours": "2小时前",
+      "cosmic_traveler": "宇宙旅人",
+      "ai_response_initial": "我听到了。情绪就像宇宙海洋中的潮汐。告诉我更多你心里的想法吧。",
+      "retake_test": "重新测试",
+      "start_test": "开始测试",
+      "subtitle_love_style_short": "颜色理论",
+      "subtitle_partner_short": "解码关系",
+      "ai_error": "抱歉，我现在无法连接到星辰（模型加载失败）。",
+      "report_title": "详细报告",
+      "report_intro": "您的综合档案分析。",
+      "paradox": {
+        "title": "特别洞察：欲望对象与治愈对象",
+        "subtitle": "为何你总是爱上让你痛苦的人？",
+        "points": [
+          {
+            "title": "1. 错误的“理想”：回避型陷阱",
+            "text": "焦虑型/狂热型人格本能地被疏离、不可预测的人（回避型/游戏型）吸引。对方的若即若离制造了间歇性强化，让你将焦虑误认为是激情的深度。这种伴侣往往是助燃剂，使关系陷入自我毁灭的循环。"
+          },
+          {
+            "title": "2. 真正的理想：安全型容器",
+            "text": "你唯一的功能性理想伴侣是安全型依恋者（且带有奉献型特质）。他们情绪一致、边界清晰、高度透明。只有这种平稳的反馈机制才能强制打破你的“猜疑-焦虑”循环。"
+          },
+          {
+            "title": "3. 必须克服的障碍：“无聊”感",
+            "text": "当你遇到真正对的人（安全型）时，第一反应可能是排斥，觉得“无聊”或“没感觉”。这是戒断反应。必须强行认知到：这种“无聊”就是安全感。只有耐受住初期的平淡，病理机制才能消退。"
+          }
+        ]
+      }
     },
     "chart": {
       "anxious_high": "高焦虑",
