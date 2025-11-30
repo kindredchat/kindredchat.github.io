@@ -19,8 +19,8 @@ import { TRANSLATIONS } from './translations';
 const BottomNav = ({ activeTab, setActiveTab, t }) => {
   const tabs = [
     { id: 'home', icon: Home, label: t.ui.explore_tab || '探索' },
-    { id: 'community', icon: Compass, label: t.ui.community_tab || '社区' },
     { id: 'ai', icon: Bot, label: t.ui.ai_tab || 'AI 聊愈' },
+    { id: 'community', icon: Compass, label: t.ui.community_tab || '社区', disabled: true },
     { id: 'mine', icon: User, label: t.ui.mine_tab || '我的' },
   ];
 
@@ -29,11 +29,16 @@ const BottomNav = ({ activeTab, setActiveTab, t }) => {
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;
+        const isDisabled = tab.disabled;
         return (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-col items-center gap-1 transition-all ${isActive ? 'text-gold-400' : 'text-slate-500 hover:text-slate-300'}`}
+            disabled={isDisabled}
+            onClick={() => !isDisabled && setActiveTab(tab.id)}
+            className={`flex flex-col items-center gap-1 transition-all ${
+              isDisabled ? 'opacity-30 cursor-not-allowed text-slate-600' :
+              isActive ? 'text-gold-400' : 'text-slate-500 hover:text-slate-300'
+            }`}
           >
             <Icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} strokeWidth={isActive ? 2.5 : 2} />
             <span className="text-[10px] font-medium">{tab.label}</span>
@@ -501,9 +506,12 @@ export default function AttachmentTest() {
   const [testType, setTestType] = useState('attachment');
 
   // Persistent Results
-  const [results, setResults] = useState({
-      self: { attachment: null, love_style: null, reconciliation: null },
-      partner: { attachment: null }
+  const [results, setResults] = useState(() => {
+      const local = localStorage.getItem('kindred_results');
+      return local ? JSON.parse(local) : {
+          self: { attachment: null, love_style: null, reconciliation: null },
+          partner: { attachment: null }
+      };
   });
 
   // Library State
@@ -520,21 +528,55 @@ export default function AttachmentTest() {
         try {
           const docRef = doc(db, "users", currentUser.uid);
           const docSnap = await getDoc(docRef);
+          let cloudData = {};
           if (docSnap.exists()) {
              const data = docSnap.data();
              if (data.results) {
-               setResults(data.results);
+               cloudData = data.results;
              }
+          }
+
+          // Merge local storage if exists
+          const localDataString = localStorage.getItem('kindred_results');
+          if (localDataString) {
+              const localData = JSON.parse(localDataString);
+              // Simple merge: prefer local if set, else cloud
+              const newResults = {
+                 self: {
+                     attachment: localData.self?.attachment || cloudData.self?.attachment || null,
+                     love_style: localData.self?.love_style || cloudData.self?.love_style || null,
+                     reconciliation: localData.self?.reconciliation || cloudData.self?.reconciliation || null,
+                 },
+                 partner: {
+                     attachment: localData.partner?.attachment || cloudData.partner?.attachment || null
+                 }
+              };
+              setResults(newResults);
+              // Sync back to cloud
+              await setDoc(doc(db, "users", currentUser.uid), { results: newResults }, { merge: true });
+              // Clear local storage
+              localStorage.removeItem('kindred_results');
+          } else {
+             // Use cloud data
+             setResults({
+                 self: { attachment: null, love_style: null, reconciliation: null, ...cloudData.self },
+                 partner: { attachment: null, ...cloudData.partner }
+             });
           }
         } catch(e) {
           console.error("Error loading data:", e);
         }
       } else {
-        // Reset results on logout or keep local? Resetting is safer for shared devices.
-        setResults({
-            self: { attachment: null, love_style: null, reconciliation: null },
-            partner: { attachment: null }
-        });
+        // Logged out: load from local storage
+        const local = localStorage.getItem('kindred_results');
+        if (local) {
+            setResults(JSON.parse(local));
+        } else {
+            setResults({
+                self: { attachment: null, love_style: null, reconciliation: null },
+                partner: { attachment: null }
+            });
+        }
       }
     });
     return () => unsubscribe();
@@ -654,11 +696,20 @@ export default function AttachmentTest() {
         if (user) {
             setDoc(doc(db, "users", user.uid), { results: newResults }, { merge: true })
               .catch(e => console.error("Error saving result:", e));
+        } else {
+            // Save to local storage
+            localStorage.setItem('kindred_results', JSON.stringify(newResults));
         }
 
         return newResults;
     });
     setScreen('result');
+  };
+
+  const handleQuit = () => {
+    if (window.confirm(`${t.ui.quit_confirm_msg} ${t.ui.quit_confirm}`)) {
+      setScreen('intro');
+    }
   };
 
 
@@ -706,7 +757,13 @@ export default function AttachmentTest() {
 
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        <div className="max-w-md w-full glass-card rounded-2xl overflow-hidden flex flex-col min-h-[500px] border border-white/10">
+        <div className="max-w-md w-full glass-card rounded-2xl overflow-hidden flex flex-col min-h-[500px] border border-white/10 relative">
+          <button
+             onClick={handleQuit}
+             className="absolute top-4 right-4 p-2 text-slate-500 hover:text-white transition-colors z-10"
+          >
+             <XCircle className="w-6 h-6" />
+          </button>
           <div className="h-1 bg-white/10 w-full">
             <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500 ease-out" style={{ width: `${progress}%` }}></div>
           </div>
